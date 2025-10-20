@@ -3,7 +3,7 @@ function exp_array=expand_array(node_x,node_y,gn,xTarget,yTarget,CLOSED,MAX_X,MA
     %This function takes a node and returns the expanded list
     %of successors,with the calculated fn values.
     %The criteria being none of the successors are on the CLOSED list.
-    %
+    
     %Copyright 2009-2010 The MathWorks, Inc.
     
     %EXPANDED ARRAY FORMAT
@@ -16,7 +16,7 @@ function exp_array=expand_array(node_x,node_y,gn,xTarget,yTarget,CLOSED,MAX_X,MA
     c2=size(CLOSED,1);%Number of elements in CLOSED including the zeros
     for k= 1:-1:-1
         for j= 1:-1:-1
-            if (k~=j || k~=0)  %The node itself is not its successor
+            if (k~=j || k~=0)  %The node itself is not its successor(???)
                 s_x = node_x+k;
                 s_y = node_y+j;
                 if( (s_x >0 && s_x <=MAX_X) && (s_y >0 && s_y <=MAX_Y))%node within array bound

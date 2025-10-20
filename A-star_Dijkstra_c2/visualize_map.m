@@ -16,14 +16,12 @@ function visualize_map(map,path,visit_nodes)
     % start point
     scatter(map(1, 1)-0.5, map(1, 2)-0.5,'b','*');
 
-    % target point
-	scatter(map(size(map, 1), 1)-0.5, map(size(map, 1), 2)-0.5, 'r','*');
 
     % optimal path
     if size(path,1) > 1
         path_cnt = 2:size(path,1)-1;
-        scatter(path(path_cnt,1)-0.5,path(path_cnt,2)-0.5,'b');
-        plot(path(:,1)-0.5,path(:,2)-0.5,'b')
+        scatter(path(path_cnt,1)-0.5,path(path_cnt,2)-0.5,'r');
+        plot(path(:,1)-0.5,path(:,2)-0.5,'r')
     end
     
     if size(visit_nodes,1) > 1
@@ -38,6 +36,8 @@ function visualize_map(map,path,visit_nodes)
         scatter2 = scatter(node(:,1)-0.5,node(:,2)-0.5,node_sz,'bs','filled');
         alpha(scatter2,.1)
     end
+    % target point
+	scatter(map(size(map, 1), 1)-0.5, map(size(map, 1), 2)-0.5, 'r','*');
 
     grid on 
     set(gca,'xtick',0:1:200)
