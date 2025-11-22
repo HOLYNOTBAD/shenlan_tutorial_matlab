@@ -55,13 +55,12 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
     xNode=xStart;
     yNode=yStart;
     OPEN_COUNT=1;
-    goal_distance=distance(xNode,yNode,xTarget,yTarget);
     path_cost=0;
 
     %--------------------------------------------------------------------------
     %IS ON LIST 1/0 |X val |Y val |Parent X val |Parent Y val |h(n) |g(n)|f(n)|
     %--------------------------------------------------------------------------
-    OPEN(OPEN_COUNT,:)=insert_open(xNode,yNode,xNode,yNode,goal_distance,path_cost,goal_distance);
+    OPEN(OPEN_COUNT,:)=insert_open(xNode,yNode,xNode,yNode,0,path_cost,path_cost);
     % 从openlist中取出当前节点，加入closelist
     OPEN(OPEN_COUNT,1)=0;
 

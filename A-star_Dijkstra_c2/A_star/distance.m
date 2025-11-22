@@ -3,3 +3,5 @@ function dist = distance(x1,y1,x2,y2)
 %coordinates.
 %   Copyright 2009-2010 The MathWorks, Inc.
 dist=sqrt((x1-x2)^2 + (y1-y2)^2);
+%dist=0;
+

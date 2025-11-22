@@ -8,6 +8,7 @@ xStart = 1.0;
 yStart = 1.0;
 xTarget = 99.0;
 yTarget = 99.0;
+% 地图大小
 MAX_X = 100;
 MAX_Y = 100;
 
@@ -16,10 +17,10 @@ MAX_Y = 100;
 map = obstacle_map(xStart, yStart, xTarget, yTarget, MAX_X, MAX_Y);
 
 % Waypoint Generator Using the A* 
-[path,OPEN] = A_star_search(map, MAX_X,MAX_Y);
+[path,OPEN] = Dijkstra_search(map, MAX_X,MAX_Y);
 
 % visualize the 2D grid map
-visualize_map(map, path, OPEN);
+% visualize_map(map, path, OPEN);
 
 % save map
 % save('Data/map.mat', 'map', 'MAX_X', 'MAX_Y');
