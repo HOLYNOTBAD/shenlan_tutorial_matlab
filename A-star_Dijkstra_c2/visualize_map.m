@@ -10,7 +10,7 @@ function visualize_map(map,path,visit_nodes)
     % obst
     obst_sz = max(2500/sz_map, 36);
     obst_cnt = 2: size(map, 1) - 1;
-    obst_color = [55,184,157]/255;
+    obst_color = [139,0,0]/255;
     scatter(map(obst_cnt, 1)-0.5,map(obst_cnt, 2)-0.5,obst_sz,obst_color,'filled');
 
     % start point

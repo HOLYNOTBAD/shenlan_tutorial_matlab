@@ -82,27 +82,47 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
     % flag to indicate if path is found or not
     NoPath=1;
 
+    % 初始化可视化窗口
+    figure('Name','A*搜索过程可视化','Position',[500, 50, 700, 700]);
+    hold on;
+    
+    % 创建visit_nodes数组用于可视化（第1列：1表示在openlist，0表示在closelist）
+    visit_nodes = [];
+    % 将初始节点加入closelist可视化数组
+    visit_nodes(end+1,:) = [0, xNode, yNode];
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % START ALGORITHM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     exit_flag = 0;
+    iteration = 0;
+    
     while(~exit_flag) 
+        iteration = iteration + 1;
+        
         exp_array = expand_array(xNode,yNode,path_cost,xTarget,yTarget,CLOSED,MAX_X,MAX_Y);
         
         % get the number of expanded nodes
         exp_count=size(exp_array,1);
         %Insert each CORRECT expanded node to the OPEN list
         for i=1:exp_count
+            add_to_open = true;
             for j=1:CLOSED_COUNT
                 if (exp_array(i,1) == CLOSED(j,1) && exp_array(i,2) == CLOSED(j,2))
                     % this successor is on the CLOSED list, do not add to OPEN
+                    add_to_open = false;
                     break;
-                else % add it into the OPEN 
-                    OPEN_COUNT=OPEN_COUNT+1;
-                    OPEN(OPEN_COUNT,:)=insert_open(exp_array(i,1),exp_array(i,2),xNode,yNode,exp_array(i,3),exp_array(i,4),exp_array(i,5));
-                    OPEN(OPEN_COUNT,1)=1; %mark as on the OPEN list
                 end
+            end
+            
+            if add_to_open
+                OPEN_COUNT=OPEN_COUNT+1;
+                OPEN(OPEN_COUNT,:)=insert_open(exp_array(i,1),exp_array(i,2),xNode,yNode,exp_array(i,3),exp_array(i,4),exp_array(i,5));
+                OPEN(OPEN_COUNT,1)=1; %mark as on the OPEN list
+                
+                % 添加到openlist可视化数组
+                visit_nodes(end+1,:) = [1, exp_array(i,1), exp_array(i,2)];
             end
         end
 
@@ -116,6 +136,19 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
         CLOSED_COUNT=CLOSED_COUNT+1;
         CLOSED(CLOSED_COUNT,1)=xNode;
         CLOSED(CLOSED_COUNT,2)=yNode;
+        
+        % 更新节点状态为closelist
+        for i=1:size(visit_nodes,1)
+            if visit_nodes(i,2) == xNode && visit_nodes(i,3) == yNode
+                visit_nodes(i,1) = 0;
+                break;
+            end
+        end
+        
+        % 实时可视化搜索过程
+        cla;  % 清除当前图形内容
+        visualize_search_step(map, visit_nodes, iteration);
+        pause(0.2);  % 暂停一段时间，控制可视化速度
         
         %Check if the OPEN is empty
         exit_flag = isEmpty(OPEN,OPEN_COUNT);
@@ -150,7 +183,66 @@ function [path, OPEN] = A_star_search(map,MAX_X,MAX_Y)
         end
         %Reverse the path to get from start to target
         path = flipud(path);
+        
+        % 显示最终路径
+        cla;
+        visualize_search_step(map, visit_nodes, iteration, path);
+        pause(1);
     else
         disp('No Path Found');
     end
+end
+
+% 辅助函数：可视化搜索步骤
+function visualize_search_step(map, visit_nodes, iteration, path)
+    set(gcf, 'Renderer', 'painters');
+    hold on;
+    
+    sz_map = max(max(map));
+    
+    % 绘制障碍物
+    obst_sz = max(2500/sz_map, 36);
+    obst_cnt = 2: size(map, 1) - 1;
+    obst_color = [139, 0, 0]/255;  % 暗红色障碍物
+    scatter(map(obst_cnt, 1)-0.5,map(obst_cnt, 2)-0.5,obst_sz,obst_color,'filled');
+
+    % 绘制起点
+    scatter(map(1, 1)-0.5, map(1, 2)-0.5,'b','*');
+    
+    % 绘制终点
+    scatter(map(size(map, 1), 1)-0.5, map(size(map, 1), 2)-0.5, 'r','*');
+    
+    % 绘制访问节点
+    if size(visit_nodes,1) > 0
+        % openlist (绿色方块)
+        node_sz = 10000/sz_map;
+        node = visit_nodes(visit_nodes(:,1)==1, 2:3);
+        if ~isempty(node)
+            scatter1 = scatter(node(:,1)-0.5,node(:,2)-0.5,node_sz,'gs','filled');
+            alpha(scatter1,0.3);
+        end
+
+        % closelist (蓝色方块)
+        node = visit_nodes(visit_nodes(:,1)==0, 2:3);
+        if ~isempty(node)
+            scatter2 = scatter(node(:,1)-0.5,node(:,2)-0.5,node_sz,'bs','filled');
+            alpha(scatter2,0.3);
+        end
+    end
+    
+    % 绘制最终路径（如果提供）
+    if exist('path', 'var') && ~isempty(path) && size(path,1) > 1
+        path_cnt = 2:size(path,1)-1;
+        if ~isempty(path_cnt)
+            scatter(path(path_cnt,1)-0.5,path(path_cnt,2)-0.5,'r');
+        end
+        plot(path(:,1)-0.5,path(:,2)-0.5,'r','LineWidth',2);
+    end
+    
+    % 设置标题和坐标轴
+    title(['A* 搜索过程 - 迭代 ', num2str(iteration)]);
+    grid on;
+    set(gca,'xtick',0:1:sz_map);
+    set(gca,'ytick',0:1:sz_map);
+    axis equal;
 end
